@@ -10,8 +10,7 @@ const { now } = Date; // destructuring version of: now = Date.now()
 
 // config
 const stationsFeedUrl = 'https://feeds.bayareabikeshare.com/stations/stations.json';
-const hostname = '127.0.0.1';
-const port = 3001;
+const port = process.env.PORT || 8080; // process.env.PORT lets Heroku set port
 const millis = 1000;
 const refetchDelaySeconds = 30; /* Set to something like 30 seconds in production */
 let lastFetchTimeMS = 0;
@@ -106,6 +105,6 @@ const server = http.createServer((req, res) => {
 });
 
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+server.listen(port, () => {
+  console.log(`Server running on port ${port}/`);
 });
