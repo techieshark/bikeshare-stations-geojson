@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node app.js",
     "lint": "./node_modules/.bin/eslint",
-    "lintAll": "./node_modules/.bin/eslint *.js"
+    "lintAll": "./node_modules/.bin/eslint *.js",
+    "deploy": "git push heroku master"
   },
   "devDependencies": {
     "eslint": "^4.9.0",
