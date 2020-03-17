@@ -6,7 +6,7 @@
   "author": "Peter W (@techieshark)",
   "license": "MIT",
   "engines": {
-    "node": "10.16.x"
+    "node": "10.19.x"
   },
   "scripts": {
     "start": "node app.js",
