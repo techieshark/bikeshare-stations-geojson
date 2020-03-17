@@ -5,6 +5,9 @@
   "main": "app.js",
   "author": "Peter W (@techieshark)",
   "license": "MIT",
+  "engines": {
+    "node": "10.16.x"
+  },
   "scripts": {
     "start": "node app.js",
     "lint": "eslint *.js",
