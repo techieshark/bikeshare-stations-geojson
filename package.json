@@ -7,8 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "lint": "./node_modules/.bin/eslint",
-    "lintAll": "./node_modules/.bin/eslint *.js",
+    "lint": "eslint *.js",
     "deploy": "git push heroku master"
   },
   "devDependencies": {
