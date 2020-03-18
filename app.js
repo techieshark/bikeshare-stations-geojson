@@ -10,12 +10,11 @@ const { now } = Date; // destructuring version of: now = Date.now()
 
 // config
 const stationsFeedUrl = 'https://feeds.bayareabikeshare.com/stations/stations.json';
-const port = process.env.PORT || 8080; // process.env.PORT lets Heroku set port
+const port = process.env.PORT || 8080; // `process.env.PORT` lets Heroku set port
 const millis = 1000;
 const refetchDelaySeconds = 30; /* Set to something like 30 seconds in production */
 let lastFetchTimeMS = 0;
 let cachedStations = null;
-
 
 /**
  * Respond with the json data and close the connection.
@@ -28,10 +27,9 @@ function sendJsonResponse(req, res, json) {
   res.setHeader('Content-Type', 'application/json');
   // res.setHeader('Access-Control-Allow-Headers', req.headers.origin);
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.end(JSON.stringify(json, null, 3)); // send prettified JSON response
+  res.end(JSON.stringify(json, null, 3)); // Send prettified JSON response
   // res.end(JSON.stringify(json)); // non pretty
 }
-
 
 /**
  * Transform a station into a GeoJSON Feature
@@ -57,12 +55,11 @@ function transformStation(station) {
 function transformFeed(stationFeedData) {
   const stationsGeoJSON = {
     type: 'FeatureCollection',
-    // who knows what a 'bean list' is but that's where feed stores stations:
+    // Who knows what a 'bean list' is but that's where feed stores stations:
     features: stationFeedData.stationBeanList.map(transformStation),
   };
   return stationsGeoJSON;
 }
-
 
 /**
  * Fetch stations, and pass them to callback on success.
@@ -81,14 +78,14 @@ function fetchStations(callback) {
   });
 }
 
-
 const server = http.createServer((req, res) => {
   if (req.url !== '/') {
-    // barf on anything other than the root url
+    // Barf on anything other than the root url
     res.statusCode = 404;
     res.end('NOT FOUND');
     return;
   }
+
   const nowMS = now();
   if (nowMS > lastFetchTimeMS + (refetchDelaySeconds * millis)) {
     console.log('Time for a refetch');
@@ -96,14 +93,13 @@ const server = http.createServer((req, res) => {
       cachedStations = stations;
       sendJsonResponse(req, res, cachedStations);
     });
-    // update timestamp
+    // Update timestamp
     lastFetchTimeMS = now();
   } else {
     console.log(`No need to refetch; last was less than ${refetchDelaySeconds} seconds ago.`);
     sendJsonResponse(req, res, cachedStations);
   }
 });
-
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}/`);
