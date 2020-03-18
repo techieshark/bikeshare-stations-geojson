@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * This server fetches, transforms, and caches the bikeshare stations.
  * Stations will be re-fetched if the stationlist either doens't exist or is too old.
@@ -18,16 +20,16 @@ let cachedStations = null;
 
 /**
  * Respond with the json data and close the connection.
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
+ * @param {IncomingMessage} request
+ * @param {ServerResponse} response
  * @param {JSON object} json
  */
-function sendJsonResponse(req, res, json) {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
+function sendJsonResponse(request, response, json) {
+  response.statusCode = 200;
+  response.setHeader('Content-Type', 'application/json');
   // res.setHeader('Access-Control-Allow-Headers', req.headers.origin);
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.end(JSON.stringify(json, null, 3)); // Send prettified JSON response
+  response.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
+  response.end(JSON.stringify(json, null, 3)); // Send prettified JSON response
   // res.end(JSON.stringify(json)); // non pretty
 }
 
@@ -66,23 +68,23 @@ function transformFeed(stationFeedData) {
  * @param {(json => any)} callback
  */
 function fetchStations(callback) {
-  https.get(stationsFeedUrl, (res) => {
-    res.setEncoding('utf8');
+  https.get(stationsFeedUrl, (response) => {
+    response.setEncoding('utf8');
     let body = '';
-    res.on('data', (data) => {
+    response.on('data', (data) => {
       body += data;
     });
-    res.on('end', () => {
+    response.on('end', () => {
       callback(transformFeed(JSON.parse(body)));
     });
   });
 }
 
-const server = http.createServer((req, res) => {
-  if (req.url !== '/') {
+const server = http.createServer((request, response) => {
+  if (request.url !== '/') {
     // Barf on anything other than the root url
-    res.statusCode = 404;
-    res.end('NOT FOUND');
+    response.statusCode = 404;
+    response.end('NOT FOUND');
     return;
   }
 
@@ -91,13 +93,13 @@ const server = http.createServer((req, res) => {
     console.log('Time for a refetch');
     fetchStations((stations) => {
       cachedStations = stations;
-      sendJsonResponse(req, res, cachedStations);
+      sendJsonResponse(request, response, cachedStations);
     });
     // Update timestamp
     lastFetchTimeMS = now();
   } else {
     console.log(`No need to refetch; last was less than ${refetchDelaySeconds} seconds ago.`);
-    sendJsonResponse(req, res, cachedStations);
+    sendJsonResponse(request, response, cachedStations);
   }
 });
 
